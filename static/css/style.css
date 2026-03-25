@@ -201,7 +201,7 @@ nav {
 
 .cd-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: 1.5fr 1fr 1fr 1fr 0.7fr;
   max-width: 720px;
   margin: 0 auto 2rem;
 }
