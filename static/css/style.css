@@ -201,7 +201,7 @@ nav {
 
 .cd-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 0.6fr;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr 0.6fr;
   max-width: 720px;
   margin: 0 auto 2rem;
 }
@@ -210,7 +210,7 @@ nav {
   padding: 1rem .5rem;
   border-right: 1px solid var(--border);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 .cd-cell:last-child { border-right: none; }
 
@@ -224,10 +224,11 @@ nav {
 }
 .cd-num {
   font-family: 'Oswald', sans-serif;
-  font-size: clamp(28px, 7vw, 76px);
+  font-size: clamp(32px, 6vw, 72px);
   color: var(--text);
   line-height: 1;
   display: block;
+  overflow: visible;
   transition: color .3s;
   transform-origin: center top;
   perspective: 400px;
