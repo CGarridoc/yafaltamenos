@@ -381,51 +381,109 @@ MILESTONES.forEach(function (m) {
 
 
 /* ─────────────────────────────────────
-   NOTICIAS
-   Para agregar: duplica un objeto.
-   Campos: tag, hl, excerpt, date
+   NOTICIAS — carga dinámica desde .md
+   Índice:  /content/noticias/index.json
+   Agregar: añade el filename al index.json
+            y crea el archivo .md correspondiente.
 ───────────────────────────────────── */
-var NEWS = [
-  {
-    tag:     'economía',
-    hl:      'Gobierno anuncia plan de austeridad: recorta biblioteca pública municipal pero inaugura helipuerto en La Moneda',
-    excerpt: 'El ahorro proyectado alcanza los $4 millones anuales. El helipuerto, en tanto, costará $1.200 millones.',
-    date:    'MAR 2026'
-  },
-  {
-    tag:     'gabinete',
-    hl:      'Ministro del Interior confunde "migración" con "invasión" en entrevista en vivo; luego aclara que "fue un lapsus conceptual"',
-    excerpt: 'El lapsus duró cuarenta y siete minutos de entrevista. La aclaración, cuarenta y siete segundos.',
-    date:    'MAR 2026'
-  },
-  {
-    tag:     'derechos',
-    hl:      'Nuevo proyecto endurece penas para protestas en espacios públicos',
-    excerpt: 'El proyecto define "espacio público" de forma tan amplia que técnicamente incluye el interior de los hogares.',
-    date:    'MAR 2026'
-  },
-  {
-    tag:     'medioambiente',
-    hl:      'Paraliza evaluación ambiental de parques nacionales para "agilizar inversión privada"',
-    excerpt: 'Los parques, consultados al respecto, no pudieron responder. Son parques.',
-    date:    'MAR 2026'
-  }
-];
-
 var nl = document.getElementById('nl');
-NEWS.forEach(function (n, i) {
-  var d = document.createElement('div');
-  d.className = 'news-item';
-  d.innerHTML =
-    '<div class="news-num">' + String(i + 1).padStart(2, '0') + '</div>' +
-    '<div class="news-body">' +
-      '<div class="news-tag">'     + n.tag     + '</div>' +
-      '<div class="news-hl">'      + n.hl      + '</div>' +
-      (n.excerpt ? '<div class="news-excerpt">' + n.excerpt + '</div>' : '') +
-      '<div class="news-date">'    + n.date    + '</div>' +
-    '</div>';
-  nl.appendChild(d);
-});
+
+/* Parsea el bloque frontmatter YAML de un archivo .md.
+   Soporta: strings (con o sin comillas), fechas ISO, booleans. */
+function parseFrontmatter(raw) {
+  var m = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (!m) return { data: {}, body: raw };
+  var data = {};
+  m[1].split('\n').forEach(function (line) {
+    var i = line.indexOf(':');
+    if (i === -1) return;
+    var k = line.slice(0, i).trim();
+    var v = line.slice(i + 1).trim();
+    /* quita comillas simples o dobles envolventes */
+    if (v.length >= 2 &&
+        ((v[0] === '"'  && v[v.length - 1] === '"') ||
+         (v[0] === "'"  && v[v.length - 1] === "'"))) {
+      v = v.slice(1, -1);
+    }
+    if (v === 'true')  v = true;
+    if (v === 'false') v = false;
+    data[k] = v;
+  });
+  return { data: data, body: raw.slice(m[0].length).trim() };
+}
+
+/* Convierte "2026-03-20" → "MAR 2026" */
+function fmtDate(iso) {
+  var months = ['ENE','FEB','MAR','ABR','MAY','JUN',
+                'JUL','AGO','SEP','OCT','NOV','DIC'];
+  var p = String(iso).split('-');
+  return p.length >= 2
+    ? months[parseInt(p[1], 10) - 1] + '\u00a0' + p[0]
+    : iso;
+}
+
+/* Renderiza el listado con el mismo markup que el diseño original */
+function renderNews(items) {
+  nl.innerHTML = '';
+  if (!items.length) {
+    nl.innerHTML =
+      '<p style="color:var(--text-muted);font-family:\'EB Garamond\',serif;' +
+      'font-style:italic;">No hay noticias disponibles.</p>';
+    return;
+  }
+  items.forEach(function (n, i) {
+    var d = document.createElement('div');
+    d.className = 'news-item';
+    d.innerHTML =
+      '<div class="news-num">' + String(i + 1).padStart(2, '0') + '</div>' +
+      '<div class="news-body">' +
+        '<div class="news-tag">'    + n.tag              + '</div>' +
+        '<div class="news-hl">'     + n.title            + '</div>' +
+        (n.excerpt
+          ? '<div class="news-excerpt">' + n.excerpt + '</div>'
+          : '') +
+        '<div class="news-date">'   + fmtDate(n.date)   + '</div>' +
+      '</div>';
+    nl.appendChild(d);
+  });
+}
+
+/* Estado de carga */
+nl.innerHTML =
+  '<p style="color:var(--text-muted);font-family:\'Roboto Mono\',monospace;' +
+  'font-size:.8rem;letter-spacing:.05em;">cargando noticias\u2026</p>';
+
+/* 1. Lee el índice → 2. Fetch paralelo de cada .md → 3. Filtra y ordena */
+fetch('/content/noticias/index.json')
+  .then(function (r) {
+    if (!r.ok) throw new Error('índice no disponible (' + r.status + ')');
+    return r.json();
+  })
+  .then(function (files) {
+    return Promise.all(
+      files.map(function (filename) {
+        return fetch('/content/noticias/' + filename)
+          .then(function (r) { return r.ok ? r.text() : null; })
+          .catch(function ()  { return null; });
+      })
+    );
+  })
+  .then(function (rawFiles) {
+    var items = rawFiles
+      .filter(Boolean)                                      /* descarta errores */
+      .map(function (raw) { return parseFrontmatter(raw).data; })
+      .filter(function (d) { return d.published === true; }) /* solo publicados  */
+      .sort(function (a, b) {                               /* fecha descendente */
+        return String(b.date).localeCompare(String(a.date));
+      });
+    renderNews(items);
+  })
+  .catch(function (err) {
+    console.warn('[noticias]', err.message);
+    nl.innerHTML =
+      '<p style="color:var(--text-muted);font-family:\'EB Garamond\',serif;' +
+      'font-style:italic;">Error cargando noticias. Reintente más tarde.</p>';
+  });
 
 
 /* ─────────────────────────────────────
