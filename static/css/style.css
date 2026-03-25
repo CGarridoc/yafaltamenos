@@ -224,7 +224,7 @@ nav {
 }
 .cd-num {
   font-family: 'Oswald', sans-serif;
-  font-size: clamp(44px, 10vw, 88px);
+  font-size: clamp(28px, 7vw, 88px);
   color: var(--text);
   line-height: 1;
   display: block;
