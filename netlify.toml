@@ -1,0 +1,48 @@
+# ─────────────────────────────────────────────────────
+# netlify.toml · YaFaltaMenos.cl
+# ─────────────────────────────────────────────────────
+
+[build]
+  publish = "."
+
+# ── REDIRECTS ────────────────────────────────────────
+
+# Netlify Identity callback
+[[redirects]]
+  from   = "/.netlify/identity"
+  to     = "/.netlify/identity"
+  status = 200
+
+# CMS panel (trailing-slash normalization)
+[[redirects]]
+  from   = "/admin"
+  to     = "/admin/index.html"
+  status = 200
+
+# ── SECURITY HEADERS ─────────────────────────────────
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options           = "SAMEORIGIN"
+    X-Content-Type-Options    = "nosniff"
+    X-XSS-Protection          = "1; mode=block"
+    Referrer-Policy           = "strict-origin-when-cross-origin"
+    Permissions-Policy        = "camera=(), microphone=(), geolocation=()"
+
+# Static assets — long cache
+[[headers]]
+  for = "/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# HTML — no cache (siempre fresco)
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# ── NETLIFY IDENTITY ─────────────────────────────────
+# Habilita Netlify Identity para el CMS en el panel de Netlify:
+# Site settings → Identity → Enable Identity
+# Luego: Identity → Services → Git Gateway → Enable Git Gateway

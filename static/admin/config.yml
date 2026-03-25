@@ -1,0 +1,46 @@
+# Copia de referencia de admin/config.yml
+# El archivo activo que usa Decap CMS es /admin/config.yml
+# Este archivo existe como respaldo y documentación.
+# Ver /admin/config.yml para la configuración real.
+
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "static/uploads"
+public_folder: "/static/uploads"
+
+collections:
+
+  - name: "noticias"
+    label: "Noticias"
+    label_singular: "Noticia"
+    folder: "content/noticias"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Titular",       name: "title",     widget: "string" }
+      - { label: "Fecha",         name: "date",       widget: "datetime", format: "YYYY-MM-DD", time_format: false }
+      - label: "Tag"
+        name: "tag"
+        widget: "select"
+        options: ["economía","derechos","corrupción","medioambiente","gabinete","internacional"]
+      - { label: "Extracto",      name: "excerpt",   widget: "text" }
+      - { label: "Cuerpo",        name: "body",      widget: "markdown", required: false }
+      - { label: "Publicado",     name: "published", widget: "boolean",  default: true }
+
+  - name: "hitos"
+    label: "Hitos de la Cronología"
+    folder: "content/hitos"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Fecha (display)", name: "date",       widget: "string" }
+      - { label: "Título",          name: "title",      widget: "string" }
+      - { label: "Descripción",     name: "descripcion",widget: "text" }
+      - label: "Tipo"
+        name: "tipo"
+        widget: "select"
+        options: ["active","future"]
+        default: "active"
+      - { label: "Ícono",           name: "icono",      widget: "string", required: false }

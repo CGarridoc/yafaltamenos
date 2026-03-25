@@ -1,0 +1,104 @@
+backend:
+  name: git-gateway
+  branch: main
+
+# Carpeta donde Netlify sube los archivos multimedia
+media_folder: "static/uploads"
+public_folder: "/static/uploads"
+
+# ── COLECCIONES ──────────────────────────────────────
+
+collections:
+
+  # ── NOTICIAS ────────────────────────────────────────
+  - name: "noticias"
+    label: "Noticias"
+    label_singular: "Noticia"
+    folder: "content/noticias"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    summary: "{{title}} — {{date}}"
+    fields:
+      - label: "Titular"
+        name: "title"
+        widget: "string"
+        hint: "El titular de la noticia (estilo serio, la ironía va implícita)"
+
+      - label: "Fecha"
+        name: "date"
+        widget: "datetime"
+        format: "YYYY-MM-DD"
+        date_format: "DD MMM YYYY"
+        time_format: false
+
+      - label: "Tag / Sección"
+        name: "tag"
+        widget: "select"
+        options:
+          - { label: "Economía",        value: "economía" }
+          - { label: "Derechos",        value: "derechos" }
+          - { label: "Corrupción",      value: "corrupción" }
+          - { label: "Medioambiente",   value: "medioambiente" }
+          - { label: "Gabinete",        value: "gabinete" }
+          - { label: "Internacional",   value: "internacional" }
+
+      - label: "Extracto"
+        name: "excerpt"
+        widget: "text"
+        hint: "1-2 oraciones. El punch va aquí."
+
+      - label: "Cuerpo"
+        name: "body"
+        widget: "markdown"
+        required: false
+        hint: "Desarrollo opcional de la noticia"
+
+      - label: "Publicado"
+        name: "published"
+        widget: "boolean"
+        default: true
+
+  # ── HITOS (TIMELINE) ────────────────────────────────
+  - name: "hitos"
+    label: "Hitos de la Cronología"
+    label_singular: "Hito"
+    folder: "content/hitos"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    summary: "{{date}} — {{title}}"
+    fields:
+      - label: "Fecha (display)"
+        name: "date"
+        widget: "string"
+        hint: "Texto libre, ej: «22 MAR 2026»"
+
+      - label: "Fecha ISO (para ordenar)"
+        name: "date_iso"
+        widget: "datetime"
+        format: "YYYY-MM-DD"
+        date_format: "DD/MM/YYYY"
+        time_format: false
+        required: false
+
+      - label: "Título del hito"
+        name: "title"
+        widget: "string"
+
+      - label: "Descripción"
+        name: "descripcion"
+        widget: "text"
+        hint: "1-2 oraciones de contexto satírico"
+
+      - label: "Tipo"
+        name: "tipo"
+        widget: "select"
+        options:
+          - { label: "Ocurrido (punto rojo)", value: "active" }
+          - { label: "Pendiente (punto vacío)", value: "future" }
+        default: "active"
+
+      - label: "Ícono (emoji opcional)"
+        name: "icono"
+        widget: "string"
+        required: false
+        hint: "Ej: 🔥 📉 🤡 — déjalo vacío si no quieres"

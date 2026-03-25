@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YaFaltaMenos.cl · El último día de Kast · 11.03.2030</title>
+  <meta name="description" content="Contando cada segundo que le queda al gobierno de Kast. El último día: 11 de marzo de 2030." />
+
+  <!-- Open Graph -->
+  <meta property="og:title"       content="YaFaltaMenos.cl · El último día de Kast" />
+  <meta property="og:description" content="Ya falta menos... contando cada segundo que le queda al gobierno." />
+  <meta property="og:url"         content="https://yafaltamenos.cl" />
+  <meta property="og:type"        content="website" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="YaFaltaMenos.cl · El último día de Kast" />
+  <meta name="twitter:description" content="Ya falta menos... contando cada segundo que le queda al gobierno." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/static/css/style.css" />
+
+  <!-- Inline theme bootstrap — runs BEFORE paint to prevent flash -->
+  <script>
+    (function () {
+      var saved = localStorage.getItem('yfm-theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var theme = saved ? saved : (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    }());
+  </script>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     NAV
+══════════════════════════════════════ -->
+<nav>
+  <a class="nav-logo" href="#">YAFALTAMENOS.CL</a>
+
+  <div class="nav-links">
+    <a href="#contador">contador</a>
+    <a href="#cronologia">cronología</a>
+    <a href="#noticias">noticias</a>
+    <a href="https://www.buymeacoffee.com/yafaltamenos" target="_blank" rel="noopener">apóyanos</a>
+  </div>
+
+  <div class="nav-right">
+    <button class="theme-toggle" id="themeToggle" aria-label="Cambiar modo claro/oscuro" title="Cambiar tema">
+      <span class="icon-sun" aria-hidden="true">&#9728;</span>
+      <span class="icon-moon" aria-hidden="true">&#9790;</span>
+    </button>
+    <button class="hamburger" id="hamburger" aria-label="Abrir menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile menu -->
+<div class="mobile-nav" id="mobileNav" role="navigation" aria-label="Menú móvil">
+  <a href="#contador"  onclick="closeMobileNav()">contador</a>
+  <a href="#cronologia" onclick="closeMobileNav()">cronología</a>
+  <a href="#noticias"  onclick="closeMobileNav()">noticias</a>
+  <a href="https://www.buymeacoffee.com/yafaltamenos" target="_blank" rel="noopener">apóyanos ☕</a>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     HERO
+══════════════════════════════════════ -->
+<div class="hero">
+  <div class="hero-date">11 · 03 · 2030</div>
+  <div class="hero-title">YA FALTA<br>MENOS</div>
+  <div class="hero-sub">contando cada segundo que le queda al gobierno de Kast</div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     COUNTDOWN
+══════════════════════════════════════ -->
+<div class="countdown" id="contador">
+  <div class="cd-grid">
+    <div class="cd-cell">
+      <span class="cd-num" id="cd-d">—</span>
+      <span class="cd-lbl">días</span>
+    </div>
+    <div class="cd-cell">
+      <span class="cd-num" id="cd-h">—</span>
+      <span class="cd-lbl">horas</span>
+    </div>
+    <div class="cd-cell">
+      <span class="cd-num" id="cd-m">—</span>
+      <span class="cd-lbl">minutos</span>
+    </div>
+    <div class="cd-cell">
+      <span class="cd-num" id="cd-s">—</span>
+      <span class="cd-lbl">segundos</span>
+    </div>
+    <div class="cd-cell ms-cell" aria-hidden="true">
+      <span class="cd-num" id="cd-ms">—</span>
+      <span class="cd-lbl">ms</span>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="prog-track">
+      <div class="prog-fill" id="pf" style="width:0%"></div>
+    </div>
+    <div class="prog-meta">
+      <span>11 mar 2026</span>
+      <span class="prog-pct" id="pp">0.00%</span>
+      <span>11 mar 2030</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     TAGLINE
+══════════════════════════════════════ -->
+<div class="tagline">
+  <h2>Parece una eternidad...</h2>
+  <p>cada segundo cuenta &middot; Chile merece más</p>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     SOCIAL SHARING
+══════════════════════════════════════ -->
+<div class="sharing">
+  <button class="share-btn" id="shareTwitter">
+    <span class="share-btn-icon" aria-hidden="true">&#120143;</span>
+    compartir en X
+  </button>
+  <button class="share-btn" id="shareWhatsapp">
+    <span class="share-btn-icon" aria-hidden="true">&#9679;</span>
+    whatsapp
+  </button>
+  <button class="share-btn" id="copyLink">
+    <span class="share-btn-icon" aria-hidden="true">&#8853;</span>
+    <span id="copyText">copiar link</span>
+  </button>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     DONATE STRIP
+══════════════════════════════════════ -->
+<div class="donate-strip">
+  <a class="donate-btn"
+     href="https://www.buymeacoffee.com/yafaltamenos"
+     target="_blank"
+     rel="noopener noreferrer">
+    &#9749; apóyanos con un café
+  </a>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     EXPULSADOS
+══════════════════════════════════════ -->
+<div class="dark-section">
+  <div class="exp-eyebrow">seguimiento en tiempo real</div>
+  <div class="exp-num" id="exp-num">000.000</div>
+  <div class="exp-divider"></div>
+  <div class="exp-label">migrantes irregulares expulsados</div>
+  <div class="exp-sub">prometió deportaciones masivas &middot; nosotros llevamos la cuenta</div>
+</div>
+
+<div class="divider-full"></div>
+
+
+<!-- ══════════════════════════════════════
+     CRONOLOGÍA DEL DESASTRE
+══════════════════════════════════════ -->
+<div class="section-wrapper" id="cronologia">
+  <div class="section">
+    <div class="sec-eyebrow">bitácora oficial</div>
+    <div class="sec-title">CRONOLOGÍA DEL DESASTRE</div>
+    <div class="timeline" id="timeline"></div>
+  </div>
+</div>
+
+<div class="divider-full"></div>
+
+
+<!-- ══════════════════════════════════════
+     NOTICIAS — EL MURO DE LOS LAMENTOS
+══════════════════════════════════════ -->
+<div class="section-wrapper" id="noticias">
+  <div class="section">
+    <div class="sec-eyebrow">registro público</div>
+    <div class="sec-title">EL MURO DE LOS LAMENTOS</div>
+    <div class="news-list" id="nl"></div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     FOOTER
+══════════════════════════════════════ -->
+<footer>
+  <div>YaFaltaMenos.cl &middot; el último día de Kast &middot; 11.03.2030</div>
+  <div class="footer-links">
+    <a href="#">política de privacidad</a>
+    <a href="#">términos de uso</a>
+    <a href="#">contacto</a>
+  </div>
+  <div>sitio de humor político &middot; no afiliado a ningún partido &middot; hecho con amor por Chile</div>
+</footer>
+
+
+<!-- ══════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════ -->
+<script>
+/* ─────────────────────────────────────
+   DARK MODE
+───────────────────────────────────── */
+var themeToggle = document.getElementById('themeToggle');
+
+themeToggle.addEventListener('click', function () {
+  var current = document.documentElement.getAttribute('data-theme');
+  var next    = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('yfm-theme', next);
+});
+
+// Also respond to system preference changes (if user hasn't set a preference)
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+  if (!localStorage.getItem('yfm-theme')) {
+    document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+  }
+});
+
+
+/* ─────────────────────────────────────
+   HAMBURGER MENU
+───────────────────────────────────── */
+var hamburger = document.getElementById('hamburger');
+var mobileNav = document.getElementById('mobileNav');
+
+hamburger.addEventListener('click', function () {
+  var isOpen = mobileNav.classList.toggle('open');
+  hamburger.setAttribute('aria-expanded', String(isOpen));
+  hamburger.setAttribute('aria-label', isOpen ? 'Cerrar menú' : 'Abrir menú');
+});
+
+function closeMobileNav() {
+  mobileNav.classList.remove('open');
+  hamburger.setAttribute('aria-expanded', 'false');
+  hamburger.setAttribute('aria-label', 'Abrir menú');
+}
+
+// Close on outside click
+document.addEventListener('click', function (e) {
+  if (!nav.contains(e.target) && !mobileNav.contains(e.target)) {
+    closeMobileNav();
+  }
+});
+var nav = document.querySelector('nav');
+
+
+/* ─────────────────────────────────────
+   COUNTDOWN
+───────────────────────────────────── */
+var TARGET = new Date('2030-03-11T00:00:00-03:00');
+var START  = new Date('2026-03-11T00:00:00-03:00');
+var TOTAL  = TARGET - START;
+
+var prevD = -1, prevH = -1, prevM = -1, prevS = -1;
+
+function triggerFlip(el) {
+  el.classList.remove('flip');
+  // Force reflow so animation restarts
+  void el.offsetWidth;
+  el.classList.add('flip');
+}
+
+function tick() {
+  var now  = new Date();
+  var diff = TARGET - now;
+
+  if (diff <= 0) {
+    document.getElementById('cd-d').textContent  = '0000';
+    document.getElementById('cd-h').textContent  = '00';
+    document.getElementById('cd-m').textContent  = '00';
+    document.getElementById('cd-s').textContent  = '00';
+    document.getElementById('cd-ms').textContent = '000';
+    document.getElementById('pf').style.width    = '100%';
+    document.getElementById('pp').textContent    = '100.00%';
+    return;
+  }
+
+  var d  = Math.floor(diff / 86400000);
+  var h  = Math.floor(diff % 86400000 / 3600000);
+  var m  = Math.floor(diff % 3600000  / 60000);
+  var s  = Math.floor(diff % 60000    / 1000);
+  var ms = Math.floor(diff % 1000);
+
+  var dEl  = document.getElementById('cd-d');
+  var hEl  = document.getElementById('cd-h');
+  var mEl  = document.getElementById('cd-m');
+  var sEl  = document.getElementById('cd-s');
+  var msEl = document.getElementById('cd-ms');
+
+  if (d !== prevD) { dEl.textContent = d; triggerFlip(dEl); prevD = d; }
+  if (h !== prevH) { hEl.textContent = String(h).padStart(2, '0'); triggerFlip(hEl); prevH = h; }
+  if (m !== prevM) { mEl.textContent = String(m).padStart(2, '0'); triggerFlip(mEl); prevM = m; }
+  if (s !== prevS) { sEl.textContent = String(s).padStart(2, '0'); triggerFlip(sEl); prevS = s; }
+
+  msEl.textContent = String(ms).padStart(3, '0');
+
+  var pct = Math.min(100, Math.max(0, (now - START) / TOTAL * 100));
+  document.getElementById('pf').style.width   = pct.toFixed(3) + '%';
+  document.getElementById('pp').textContent   = pct.toFixed(2) + '% completado';
+}
+
+setInterval(tick, 50);
+tick();
+
+
+/* ─────────────────────────────────────
+   EXPULSADOS — actualizar con dato real
+───────────────────────────────────── */
+var EXPULSADOS = 0;
+document.getElementById('exp-num').textContent =
+  EXPULSADOS === 0
+    ? '000.000'
+    : EXPULSADOS.toLocaleString('es-CL');
+
+
+/* ─────────────────────────────────────
+   TIMELINE
+   Para agregar hitos: duplica un objeto
+   y ajusta date/title/desc/type.
+   type: 'active' | 'future'
+───────────────────────────────────── */
+var MILESTONES = [
+  {
+    date:  '11 MAR 2026',
+    title: 'Asume Kast. El contador comienza.',
+    desc:  'Chile amanece con un nuevo gobierno. Aquí empieza todo.',
+    type:  'active'
+  },
+  {
+    date:  '15 MAR 2026',
+    title: 'Primera declaración polémica: día 4',
+    desc:  'Cuatro días bastaron. El récord anterior era de ocho.',
+    type:  'active'
+  },
+  {
+    date:  '22 MAR 2026',
+    title: 'Primer ministro cuestionado en el Congreso',
+    desc:  'La oposición pide explicaciones. El ministro pide tiempo.',
+    type:  'active'
+  },
+  {
+    date:  '01 ABR 2026',
+    title: 'Primer Día del Trabajador bajo el nuevo gobierno',
+    desc:  'Se esperan marchas. El gobierno las llama "eventos recreativos no autorizados".',
+    type:  'future'
+  }
+];
+
+var tlEl = document.getElementById('timeline');
+MILESTONES.forEach(function (m) {
+  var item = document.createElement('div');
+  item.className = 'tl-item' + (m.type === 'future' ? ' future' : ' active');
+  item.innerHTML =
+    '<div class="tl-date">' + m.date  + '</div>' +
+    '<div class="tl-title">' + m.title + '</div>' +
+    '<div class="tl-desc">'  + m.desc  + '</div>';
+  tlEl.appendChild(item);
+});
+
+
+/* ─────────────────────────────────────
+   NOTICIAS
+   Para agregar: duplica un objeto.
+   Campos: tag, hl, excerpt, date
+───────────────────────────────────── */
+var NEWS = [
+  {
+    tag:     'economía',
+    hl:      'Gobierno anuncia plan de austeridad: recorta biblioteca pública municipal pero inaugura helipuerto en La Moneda',
+    excerpt: 'El ahorro proyectado alcanza los $4 millones anuales. El helipuerto, en tanto, costará $1.200 millones.',
+    date:    'MAR 2026'
+  },
+  {
+    tag:     'gabinete',
+    hl:      'Ministro del Interior confunde "migración" con "invasión" en entrevista en vivo; luego aclara que "fue un lapsus conceptual"',
+    excerpt: 'El lapsus duró cuarenta y siete minutos de entrevista. La aclaración, cuarenta y siete segundos.',
+    date:    'MAR 2026'
+  },
+  {
+    tag:     'derechos',
+    hl:      'Nuevo proyecto endurece penas para protestas en espacios públicos',
+    excerpt: 'El proyecto define "espacio público" de forma tan amplia que técnicamente incluye el interior de los hogares.',
+    date:    'MAR 2026'
+  },
+  {
+    tag:     'medioambiente',
+    hl:      'Paraliza evaluación ambiental de parques nacionales para "agilizar inversión privada"',
+    excerpt: 'Los parques, consultados al respecto, no pudieron responder. Son parques.',
+    date:    'MAR 2026'
+  }
+];
+
+var nl = document.getElementById('nl');
+NEWS.forEach(function (n, i) {
+  var d = document.createElement('div');
+  d.className = 'news-item';
+  d.innerHTML =
+    '<div class="news-num">' + String(i + 1).padStart(2, '0') + '</div>' +
+    '<div class="news-body">' +
+      '<div class="news-tag">'     + n.tag     + '</div>' +
+      '<div class="news-hl">'      + n.hl      + '</div>' +
+      (n.excerpt ? '<div class="news-excerpt">' + n.excerpt + '</div>' : '') +
+      '<div class="news-date">'    + n.date    + '</div>' +
+    '</div>';
+  nl.appendChild(d);
+});
+
+
+/* ─────────────────────────────────────
+   SOCIAL SHARING
+───────────────────────────────────── */
+function getShareText() {
+  var diff = TARGET - new Date();
+  var days = Math.max(0, Math.floor(diff / 86400000));
+  var pct  = Math.min(100, Math.max(0, (new Date() - START) / TOTAL * 100));
+  return (
+    'Ya faltan ' + days + ' d\u00EDas para el \u00FAltimo d\u00EDa de Kast \uD83C\uDDE8\uD83C\uDDF1\n' +
+    pct.toFixed(1) + '% del mandato completado \u2192 yafaltamenos.cl'
+  );
+}
+
+document.getElementById('shareTwitter').addEventListener('click', function () {
+  var url = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(getShareText());
+  window.open(url, '_blank', 'noopener,noreferrer,width=600,height=400');
+});
+
+document.getElementById('shareWhatsapp').addEventListener('click', function () {
+  var url = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(getShareText());
+  window.open(url, '_blank', 'noopener,noreferrer');
+});
+
+document.getElementById('copyLink').addEventListener('click', function () {
+  var SITE_URL = 'https://yafaltamenos.cl';
+  var btn  = document.getElementById('copyLink');
+  var txt  = document.getElementById('copyText');
+
+  function onCopied() {
+    btn.classList.add('copied');
+    txt.textContent = '\u00A1copiado!';
+    setTimeout(function () {
+      btn.classList.remove('copied');
+      txt.textContent = 'copiar link';
+    }, 2200);
+  }
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(SITE_URL).then(onCopied).catch(function () {
+      fallbackCopy(SITE_URL, onCopied);
+    });
+  } else {
+    fallbackCopy(SITE_URL, onCopied);
+  }
+});
+
+function fallbackCopy(text, callback) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px;opacity:0;';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try { document.execCommand('copy'); callback(); } catch (e) {}
+  document.body.removeChild(ta);
+}
+</script>
+</body>
+</html>
