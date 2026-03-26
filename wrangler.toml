@@ -1,12 +1,17 @@
 # ─────────────────────────────────────────────────────────
 # wrangler.toml · YaFaltaMenos.cl
-# Cloudflare Pages — deploy desde GitHub
+# Cloudflare Workers — sitio estático + Worker para /og-image
 # ─────────────────────────────────────────────────────────
 
-name                  = "yafaltamenos"
-compatibility_date    = "2025-01-01"
-pages_build_output_dir = "."
+name               = "yafaltamenos"
+compatibility_date = "2025-01-01"
 
-# ── Variables de entorno (ninguna sensible en este proyecto) ──
-# [vars]
-# EJEMPLO = "valor"
+# Punto de entrada: el Worker que enruta /og-image y delega
+# el resto al binding ASSETS (archivos estáticos del repo).
+main = "worker.js"
+
+# Sirve todos los archivos estáticos del directorio raíz.
+# El Worker los alcanza vía env.ASSETS.fetch(request).
+[assets]
+directory             = "."
+not_found_handling    = "404-page"

@@ -1,14 +1,14 @@
 /**
- * og-image.js · Cloudflare Pages Function
+ * og-image.js · Cloudflare Workers — módulo importado por worker.js
  * ─────────────────────────────────────────────────────────────────────────
  * Genera una imagen OG dinámica en SVG (1200×630 px) con el contador
  * de días restantes del gobierno calculado en tiempo real.
  *
  * Ruta pública: https://yafaltamenos.cl/og-image
- * Cache:        1 hora (en Cloudflare CDN y en el browser)
+ * Cache:        1 hora en CDN (s-maxage=3600)
  *
- * Compatible con: WhatsApp, X/Twitter, Facebook, Telegram, iMessage.
- * Nota: todos los crawlers modernos renderizan SVG en etiquetas OG.
+ * API: exporta buildOGResponse() — llamada desde worker.js.
+ *      onRequest() (Pages Functions) fue eliminado; no aplica en Workers.
  * ─────────────────────────────────────────────────────────────────────────
  */
 
@@ -20,15 +20,15 @@ const TARGET_ISO = '2030-03-11T00:00:00-03:00';
 const BG      = '#0d0d0d';
 const RED     = '#C41E3A';
 const WHITE   = '#f5f3ee';
-const MUTED   = '#666666';
+const MUTED   = '#888888';
 const BORDER  = '#2a2a2a';
 
 // Ancho máximo de la barra de progreso (px dentro del SVG)
 const BAR_MAX_W = 880;
 
-// ─── Handler principal ────────────────────────────────────────────────────
+// ─── Función exportada — llamada desde worker.js ──────────────────────────
 
-export async function onRequest() {
+export function buildOGResponse() {
   const now    = new Date();
   const start  = new Date(START_ISO);
   const target = new Date(TARGET_ISO);
@@ -38,15 +38,12 @@ export async function onRequest() {
   const elapsedMs = Math.max(0, now.getTime() - start.getTime());
 
   const days  = Math.floor(remainMs / 86_400_000);
-  const pct   = Math.min(100, (elapsedMs / totalMs) * 100).toFixed(1);
+  const pct   = Math.max(0, (remainMs  / totalMs) * 100).toFixed(1);  // % RESTANTE
   const barW  = Math.min(BAR_MAX_W, Math.round((elapsedMs / totalMs) * BAR_MAX_W));
 
-  const svg = buildSVG(days, pct, barW);
-
-  return new Response(svg, {
+  return new Response(buildSVG(days, pct, barW), {
     headers: {
       'Content-Type':  'image/svg+xml',
-      // 1 hora de cache en CDN; browsers no cachean (siempre fresco al compartir)
       'Cache-Control': 'public, s-maxage=3600, max-age=0',
       'Vary':          'Accept-Encoding',
     },
@@ -80,22 +77,13 @@ function buildSVG(days, pct, barW) {
     letter-spacing="5"
     fill="${RED}">YAFALTAMENOS.CL</text>
 
-  <!-- Tag right-aligned -->
-  <text
-    x="1120" y="66"
-    font-family="'Courier New', Courier, monospace"
-    font-size="13"
-    letter-spacing="3"
-    text-anchor="end"
-    fill="${MUTED}">GOBIERNO DE KAST · 2026—2030</text>
-
   <!-- Separador header -->
   <line x1="80" y1="84" x2="1120" y2="84" stroke="${BORDER}" stroke-width="1"/>
 
   <!-- ── Bloque central: número grande ─────────────────────── -->
   <!-- Sombra sutil del número (misma posición + offset) -->
   <text
-    x="83" y="403"
+    x="123" y="398"
     font-family="Impact, 'Arial Black', 'Arial Narrow', Arial, sans-serif"
     font-size="290"
     letter-spacing="${numLetterSpacing}"
@@ -104,15 +92,15 @@ function buildSVG(days, pct, barW) {
 
   <!-- Número principal -->
   <text
-    x="80" y="400"
+    x="120" y="395"
     font-family="Impact, 'Arial Black', 'Arial Narrow', Arial, sans-serif"
     font-size="290"
     letter-spacing="${numLetterSpacing}"
     fill="${WHITE}">${days}</text>
 
-  <!-- Etiqueta DÍAS (rojo, bold) -->
+  <!-- Etiqueta DÍAS — pegada bajo el número, blanca, misma familia -->
   <text
-    x="80" y="466"
+    x="465" y="450"
     font-family="Impact, 'Arial Black', Arial, sans-serif"
     font-size="54"
     letter-spacing="20"
@@ -123,16 +111,16 @@ function buildSVG(days, pct, barW) {
     x="80" y="504"
     font-family="'Courier New', Courier, monospace"
     font-size="13"
-    letter-spacing="3"
+    letter-spacing="4"
     fill="${MUTED}">PARA EL \u00DALTIMO D\u00CDA DEL GOBIERNO</text>
 
   <!-- ── Separador + barra de progreso ─────────────────────── -->
   <line x1="80" y1="526" x2="1120" y2="526" stroke="${BORDER}" stroke-width="1"/>
 
   <!-- Track de progreso -->
-  <rect x="80" y="541" width="${BAR_MAX_W}" height="5" rx="2" fill="#1e1e1e"/>
+  <rect x="80" y="539" width="${BAR_MAX_W}" height="10" rx="3" fill="#333333"/>
   <!-- Fill de progreso -->
-  <rect x="80" y="541" width="${barW}" height="5" rx="2" fill="${RED}"/>
+  <rect x="80" y="539" width="${barW}" height="10" rx="3" fill="${RED}"/>
 
   <!-- ── Fila inferior ──────────────────────────────────────── -->
   <!-- Porcentaje (izquierda) -->
@@ -141,7 +129,7 @@ function buildSVG(days, pct, barW) {
     font-family="'Courier New', Courier, monospace"
     font-size="16"
     letter-spacing="1"
-    fill="${MUTED}">${pct}% del mandato completado</text>
+    fill="${MUTED}">${pct}% restante · la cuenta regresiva ya empez\u00F3</text>
 
   <!-- Fecha objetivo (derecha) -->
   <text
