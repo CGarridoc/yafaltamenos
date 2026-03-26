@@ -1,0 +1,12 @@
+# ─────────────────────────────────────────────────────────
+# wrangler.toml · YaFaltaMenos.cl
+# Cloudflare Pages — deploy desde GitHub
+# ─────────────────────────────────────────────────────────
+
+name                  = "yafaltamenos"
+compatibility_date    = "2025-01-01"
+pages_build_output_dir = "."
+
+# ── Variables de entorno (ninguna sensible en este proyecto) ──
+# [vars]
+# EJEMPLO = "valor"

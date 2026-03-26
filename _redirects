@@ -1,0 +1,7 @@
+# ─────────────────────────────────────────────────────────
+# _redirects · Cloudflare Pages
+# Equivalente al bloque [[redirects]] del netlify.toml
+# ─────────────────────────────────────────────────────────
+
+# Panel CMS (trailing-slash normalization)
+/admin  /admin/index.html  200
