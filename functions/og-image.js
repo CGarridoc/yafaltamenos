@@ -60,15 +60,17 @@ export async function buildOGResponse() {
 
   const svg = buildSVG(days, pct, barW);
 
-  const resvg    = new Resvg(svg, { fitTo: { mode: 'width', value: 1200 } });
+  // mode: 'original' respeta exactamente width="1200" height="630" del SVG
+  const resvg    = new Resvg(svg, { fitTo: { mode: 'original' } });
   const rendered = resvg.render();
-  const png      = rendered.asPng();   // Uint8Array
+  const png      = rendered.asPng();   // Uint8Array — dimensiones garantizadas 1200×630
 
   return new Response(png, {
     headers: {
-      'Content-Type':  'image/png',
-      'Cache-Control': 'public, s-maxage=3600, max-age=0',
-      'Vary':          'Accept-Encoding',
+      'Content-Type':         'image/png',
+      'Content-Disposition':  'inline',
+      'Cache-Control':        'public, max-age=3600',
+      'X-Content-Type-Options': 'nosniff',
     },
   });
 }
