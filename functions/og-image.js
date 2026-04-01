@@ -1,16 +1,31 @@
 /**
  * og-image.js · Cloudflare Workers — módulo importado por worker.js
  * ─────────────────────────────────────────────────────────────────────────
- * Genera una imagen OG dinámica en SVG (1200×630 px) con el contador
+ * Genera una imagen OG dinámica en PNG (1200×630 px) con el contador
  * de días restantes del gobierno calculado en tiempo real.
  *
  * Ruta pública: https://yafaltamenos.cl/og-image
  * Cache:        1 hora en CDN (s-maxage=3600)
  *
- * API: exporta buildOGResponse() — llamada desde worker.js.
- *      onRequest() (Pages Functions) fue eliminado; no aplica en Workers.
+ * Conversión SVG→PNG: @resvg/resvg-wasm (renderizado en el Worker,
+ * sin dependencias externas en runtime).
+ *
+ * NOTA: el WASM de resvg (~3.5 MB sin comprimir) supera el límite de
+ * 1 MB del plan gratuito de Workers. Se necesita Workers Paid ($5/mes)
+ * o Workers Unbound para desplegar con esta dependencia.
  * ─────────────────────────────────────────────────────────────────────────
  */
+
+import { Resvg, initWasm } from '@resvg/resvg-wasm';
+import resvgWasm from '@resvg/resvg-wasm/index_bg.wasm';
+
+// Inicializa el WASM una sola vez por isolate.
+// Guardamos la Promise para que llamadas concurrentes no dupliquen init.
+let wasmReady = null;
+function ensureWasm() {
+  if (!wasmReady) wasmReady = initWasm(resvgWasm);
+  return wasmReady;
+}
 
 // Fechas del mandato en hora de Chile (UTC-3, sin DST para simplificar)
 const START_ISO  = '2026-03-11T00:00:00-03:00';
@@ -28,7 +43,9 @@ const BAR_MAX_W = 880;
 
 // ─── Función exportada — llamada desde worker.js ──────────────────────────
 
-export function buildOGResponse() {
+export async function buildOGResponse() {
+  await ensureWasm();
+
   const now    = new Date();
   const start  = new Date(START_ISO);
   const target = new Date(TARGET_ISO);
@@ -38,12 +55,18 @@ export function buildOGResponse() {
   const elapsedMs = Math.max(0, now.getTime() - start.getTime());
 
   const days  = Math.floor(remainMs / 86_400_000);
-  const pct   = Math.max(0, (remainMs  / totalMs) * 100).toFixed(1);  // % RESTANTE
+  const pct   = Math.max(0, (remainMs  / totalMs) * 100).toFixed(1);
   const barW  = Math.min(BAR_MAX_W, Math.round((elapsedMs / totalMs) * BAR_MAX_W));
 
-  return new Response(buildSVG(days, pct, barW), {
+  const svg = buildSVG(days, pct, barW);
+
+  const resvg    = new Resvg(svg, { fitTo: { mode: 'width', value: 1200 } });
+  const rendered = resvg.render();
+  const png      = rendered.asPng();   // Uint8Array
+
+  return new Response(png, {
     headers: {
-      'Content-Type':  'image/svg+xml',
+      'Content-Type':  'image/png',
       'Cache-Control': 'public, s-maxage=3600, max-age=0',
       'Vary':          'Accept-Encoding',
     },
