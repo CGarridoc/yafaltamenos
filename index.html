@@ -51,8 +51,9 @@
 
   <div class="nav-links">
     <a href="#contador">contador</a>
-    <a href="#cronologia">cronología</a>
     <a href="#noticias">noticias</a>
+    <a href="#cronologia">cronología</a>
+    <a href="#encuesta">encuesta</a>
     <a href="https://www.buymeacoffee.com/yafaltamenos" target="_blank" rel="noopener">apóyanos</a>
   </div>
 
@@ -69,9 +70,10 @@
 
 <!-- Mobile menu -->
 <div class="mobile-nav" id="mobileNav" role="navigation" aria-label="Menú móvil">
-  <a href="#contador"  onclick="closeMobileNav()">contador</a>
+  <a href="#contador"   onclick="closeMobileNav()">contador</a>
+  <a href="#noticias"   onclick="closeMobileNav()">noticias</a>
   <a href="#cronologia" onclick="closeMobileNav()">cronología</a>
-  <a href="#noticias"  onclick="closeMobileNav()">noticias</a>
+  <a href="#encuesta"   onclick="closeMobileNav()">encuesta</a>
   <a href="https://www.buymeacoffee.com/yafaltamenos" target="_blank" rel="noopener">apóyanos ☕</a>
 </div>
 
@@ -168,14 +170,14 @@
 
 
 <!-- ══════════════════════════════════════
-     EXPULSADOS
+     NOTICIAS — EL MURO DE LOS LAMENTOS
 ══════════════════════════════════════ -->
-<div class="dark-section">
-  <div class="exp-eyebrow">seguimiento en tiempo real</div>
-  <div class="exp-num" id="exp-num">000.000</div>
-  <div class="exp-divider"></div>
-  <div class="exp-label">migrantes irregulares expulsados</div>
-  <div class="exp-sub">prometió deportaciones masivas &middot; nosotros llevamos la cuenta</div>
+<div class="section-wrapper" id="noticias">
+  <div class="section">
+    <div class="sec-eyebrow">registro público</div>
+    <div class="sec-title">EL MURO DE LOS LAMENTOS</div>
+    <div class="news-list" id="nl"></div>
+  </div>
 </div>
 
 <div class="divider-full"></div>
@@ -196,13 +198,51 @@
 
 
 <!-- ══════════════════════════════════════
-     NOTICIAS — EL MURO DE LOS LAMENTOS
+     ENCUESTA
 ══════════════════════════════════════ -->
-<div class="section-wrapper" id="noticias">
+<div class="section-wrapper" id="encuesta">
   <div class="section">
-    <div class="sec-eyebrow">registro público</div>
-    <div class="sec-title">EL MURO DE LOS LAMENTOS</div>
-    <div class="news-list" id="nl"></div>
+    <div class="sec-eyebrow">democracia directa</div>
+    <div class="sec-title">LA PREGUNTA DEL MILLÓN</div>
+    <div class="poll-wrapper">
+      <p class="poll-question">¿Crees que Kast termina su mandato?</p>
+      <div class="poll-options" id="poll-options">
+        <button class="poll-btn" data-option="si">Sí, lo termina</button>
+        <button class="poll-btn" data-option="no">No, cae antes</button>
+        <button class="poll-btn" data-option="renuncia">Renuncia él solo</button>
+      </div>
+      <div class="poll-results" id="poll-results"></div>
+      <div class="poll-status" id="poll-status">cargando&hellip;</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider-full"></div>
+
+
+<!-- ══════════════════════════════════════
+     EXPULSADOS
+══════════════════════════════════════ -->
+<div class="dark-section">
+  <div class="exp-eyebrow">seguimiento en tiempo real</div>
+  <div class="exp-num" id="exp-num">000.000</div>
+  <div class="exp-divider"></div>
+  <div class="exp-label">migrantes irregulares expulsados</div>
+  <div class="exp-sub">prometió deportaciones masivas &middot; nosotros llevamos la cuenta</div>
+</div>
+
+<div class="divider-full"></div>
+
+
+<!-- ══════════════════════════════════════
+     COMENTARIOS — LA TRIBUNA DEL PUEBLO
+══════════════════════════════════════ -->
+<div class="section-wrapper" id="comentarios">
+  <div class="section">
+    <div class="sec-eyebrow">la voz del pueblo</div>
+    <div class="sec-title">LA TRIBUNA DEL PUEBLO</div>
+    <div id="disqus_thread"></div>
+    <noscript>Activa JavaScript para ver los <a href="https://disqus.com/?ref_noscript">comentarios de Disqus</a>.</noscript>
   </div>
 </div>
 
@@ -342,48 +382,68 @@ document.getElementById('exp-num').textContent =
 
 
 /* ─────────────────────────────────────
-   TIMELINE
-   Para agregar hitos: duplica un objeto
-   y ajusta date/title/desc/type.
-   type: 'active' | 'future'
+   CRONOLOGÍA — carga dinámica desde .md
+   Índice:  /content/hitos/index.json
+   Agregar: añade el filename al index.json
+            y crea el archivo .md correspondiente.
 ───────────────────────────────────── */
-var MILESTONES = [
-  {
-    date:  '11 MAR 2026',
-    title: 'Asume Kast. El contador comienza.',
-    desc:  'Chile amanece con un nuevo gobierno. Aquí empieza todo.',
-    type:  'active'
-  },
-  {
-    date:  '15 MAR 2026',
-    title: 'Primera declaración polémica: día 4',
-    desc:  'Cuatro días bastaron. El récord anterior era de ocho.',
-    type:  'active'
-  },
-  {
-    date:  '22 MAR 2026',
-    title: 'Primer ministro cuestionado en el Congreso',
-    desc:  'La oposición pide explicaciones. El ministro pide tiempo.',
-    type:  'active'
-  },
-  {
-    date:  '01 ABR 2026',
-    title: 'Primer Día del Trabajador bajo el nuevo gobierno',
-    desc:  'Se esperan marchas. El gobierno las llama "eventos recreativos no autorizados".',
-    type:  'future'
-  }
-];
-
 var tlEl = document.getElementById('timeline');
-MILESTONES.forEach(function (m) {
-  var item = document.createElement('div');
-  item.className = 'tl-item' + (m.type === 'future' ? ' future' : ' active');
-  item.innerHTML =
-    '<div class="tl-date">' + m.date  + '</div>' +
-    '<div class="tl-title">' + m.title + '</div>' +
-    '<div class="tl-desc">'  + m.desc  + '</div>';
-  tlEl.appendChild(item);
-});
+
+/* Convierte "2026-03-11" → "11 MAR 2026" */
+function fmtDateLong(iso) {
+  var months = ['ENE','FEB','MAR','ABR','MAY','JUN',
+                'JUL','AGO','SEP','OCT','NOV','DIC'];
+  var p = String(iso).split('-');
+  if (p.length < 3) return iso;
+  return parseInt(p[2], 10) + '\u00a0' + months[parseInt(p[1], 10) - 1] + '\u00a0' + p[0];
+}
+
+function renderTimeline(items) {
+  tlEl.innerHTML = '';
+  if (!items.length) {
+    tlEl.innerHTML = '<p style="color:var(--text-muted);font-family:\'EB Garamond\',serif;font-style:italic;">No hay hitos disponibles.</p>';
+    return;
+  }
+  items.forEach(function (m) {
+    var isPast = new Date(m.date + 'T12:00:00') <= new Date();
+    var item   = document.createElement('div');
+    item.className = 'tl-item ' + (isPast ? 'active' : 'future');
+    item.innerHTML =
+      '<div class="tl-date">'  + fmtDateLong(m.date)  + '</div>' +
+      '<div class="tl-title">' + m.title               + '</div>' +
+      (m.descripcion ? '<div class="tl-desc">' + m.descripcion + '</div>' : '');
+    tlEl.appendChild(item);
+  });
+}
+
+tlEl.innerHTML = '<p style="color:var(--text-faint);font-family:\'Roboto Mono\',monospace;font-size:.75rem;letter-spacing:.05em;">cargando cron\u00f3log\u00eda\u2026</p>';
+
+fetch('/content/hitos/index.json')
+  .then(function (r) {
+    if (!r.ok) throw new Error('índice no disponible (' + r.status + ')');
+    return r.json();
+  })
+  .then(function (files) {
+    return Promise.all(
+      files.map(function (filename) {
+        return fetch('/content/hitos/' + filename)
+          .then(function (r) { return r.ok ? r.text() : null; })
+          .catch(function ()  { return null; });
+      })
+    );
+  })
+  .then(function (rawFiles) {
+    var items = rawFiles
+      .filter(Boolean)
+      .map(function (raw) { return parseFrontmatter(raw).data; })
+      .filter(function (d) { return d.published === true; })
+      .sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); });
+    renderTimeline(items);
+  })
+  .catch(function (err) {
+    console.warn('[cronología]', err.message);
+    tlEl.innerHTML = '<p style="color:var(--text-muted);font-family:\'EB Garamond\',serif;font-style:italic;">Error cargando cronología.</p>';
+  });
 
 
 /* ─────────────────────────────────────
@@ -548,6 +608,119 @@ function fallbackCopy(text, callback) {
   try { document.execCommand('copy'); callback(); } catch (e) {}
   document.body.removeChild(ta);
 }
+
+
+/* ─────────────────────────────────────
+   ENCUESTA — Cloudflare KV
+   GET  /vote → resultados actuales
+   POST /vote → registrar voto (1 por IP)
+───────────────────────────────────── */
+var pollOptions = document.getElementById('poll-options');
+var pollResults = document.getElementById('poll-results');
+var pollStatus  = document.getElementById('poll-status');
+
+var POLL_LABELS = {
+  si:       'Sí, lo termina',
+  no:       'No, cae antes',
+  renuncia: 'Renuncia él solo'
+};
+
+function renderPollResults(data) {
+  var total = (data.si || 0) + (data.no || 0) + (data.renuncia || 0);
+  var html  = '';
+  ['si', 'no', 'renuncia'].forEach(function (key) {
+    var count  = data[key] || 0;
+    var pct    = total > 0 ? Math.round((count / total) * 100) : 0;
+    var active = data.voted === key ? ' poll-bar-row--voted' : '';
+    html +=
+      '<div class="poll-bar-row' + active + '">' +
+        '<div class="poll-bar-label">' +
+          '<span>' + POLL_LABELS[key] + '</span>' +
+          '<span>' + pct + '%</span>' +
+        '</div>' +
+        '<div class="poll-bar-track">' +
+          '<div class="poll-bar-fill" style="width:' + pct + '%"></div>' +
+        '</div>' +
+      '</div>';
+  });
+  html += '<p class="poll-total">' + total.toLocaleString('es-CL') +
+          ' voto' + (total !== 1 ? 's' : '') + '</p>';
+  if (data.voted) {
+    html += '<p class="poll-voted-msg">Ya votaste \u2014 gracias por participar.</p>';
+  }
+  pollResults.innerHTML = html;
+  pollResults.style.display = 'block';
+  pollOptions.style.display  = 'none';
+  pollStatus.style.display   = 'none';
+}
+
+function setPollStatus(msg) {
+  pollStatus.textContent    = msg;
+  pollStatus.style.display  = 'block';
+  pollOptions.style.display = 'none';
+}
+
+/* Estado inicial */
+pollOptions.style.display = 'none';
+pollResults.style.display = 'none';
+
+fetch('/vote')
+  .then(function (r) {
+    if (!r.ok) throw new Error(r.status);
+    return r.json();
+  })
+  .then(function (data) {
+    if (data.voted) {
+      renderPollResults(data);
+    } else {
+      pollOptions.style.display = 'flex';
+      pollStatus.style.display  = 'none';
+    }
+  })
+  .catch(function () {
+    setPollStatus('encuesta no disponible');
+  });
+
+/* Votar */
+pollOptions.addEventListener('click', function (e) {
+  var btn = e.target.closest('.poll-btn');
+  if (!btn) return;
+  var option = btn.getAttribute('data-option');
+  setPollStatus('registrando voto\u2026');
+
+  fetch('/vote', {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify({ option: option })
+  })
+    .then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.json();
+    })
+    .then(function (data) {
+      if (!data.voted) data.voted = option;
+      renderPollResults(data);
+    })
+    .catch(function () {
+      setPollStatus('error al registrar el voto. Intenta de nuevo.');
+    });
+});
+
+
+/* ─────────────────────────────────────
+   DISQUS — La Tribuna del Pueblo
+   Shortname: yafaltamenos
+───────────────────────────────────── */
+var disqus_config = function () {
+  this.page.url        = 'https://yafaltamenos.cl';
+  this.page.identifier = 'yafaltamenos-home';
+};
+(function () {
+  var d = document, s = d.createElement('script');
+  s.src = 'https://yafaltamenos.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', +new Date());
+  (d.head || d.body).appendChild(s);
+}());
 </script>
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <script>

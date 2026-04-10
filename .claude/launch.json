@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "craftquiz",
+      "runtimeExecutable": "/opt/homebrew/bin/node",
+      "runtimeArgs": ["craftquiz/server.js"],
+      "port": 4321
+    },
+    {
+      "name": "yafaltamenos",
+      "runtimeExecutable": "/opt/homebrew/bin/npx",
+      "runtimeArgs": ["serve", "/Users/christian/Downloads/cowork/proyectos/personal/yafaltamenos", "-p", "3001", "--no-clipboard"],
+      "port": 3001
+    }
+  ]
+}

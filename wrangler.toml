@@ -15,3 +15,10 @@ main = "worker.js"
 [assets]
 directory             = "."
 not_found_handling    = "404-page"
+
+# ── KV: encuesta de votos ──────────────────────────────────────────────
+# Crear el namespace: wrangler kv:namespace create VOTES
+# Reemplaza el id con el valor que devuelve ese comando.
+[[kv_namespaces]]
+binding = "VOTES"
+id      = "adcca4998c694f20854fb187f39e6c00"
