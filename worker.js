@@ -41,6 +41,15 @@ async function handleVote(request, env) {
     return new Response(null, { status: 204, headers: CORS });
   }
 
+  /* Guard: si el binding KV no está disponible devuelve ceros
+     (evita 500 en local o si el namespace no está configurado en el dashboard) */
+  if (!env.VOTES) {
+    return Response.json(
+      { si: 0, no: 0, renuncia: 0, voted: null, error: 'kv_not_bound' },
+      { status: 200, headers: CORS }
+    );
+  }
+
   const ip = request.headers.get('CF-Connecting-IP') || 'dev-local';
 
   /* ── GET: devuelve conteos actuales + si el usuario ya votó ── */

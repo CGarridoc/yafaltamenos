@@ -231,22 +231,6 @@
   <div class="exp-sub">prometió deportaciones masivas &middot; nosotros llevamos la cuenta</div>
 </div>
 
-<div class="divider-full"></div>
-
-
-<!-- ══════════════════════════════════════
-     COMENTARIOS — LA TRIBUNA DEL PUEBLO
-══════════════════════════════════════ -->
-<div class="section-wrapper" id="comentarios">
-  <div class="section">
-    <div class="sec-eyebrow">la voz del pueblo</div>
-    <div class="sec-title">LA TRIBUNA DEL PUEBLO</div>
-    <div id="disqus_thread"></div>
-    <noscript>Activa JavaScript para ver los <a href="https://disqus.com/?ref_noscript">comentarios de Disqus</a>.</noscript>
-  </div>
-</div>
-
-
 <!-- ══════════════════════════════════════
      FOOTER
 ══════════════════════════════════════ -->
@@ -503,12 +487,9 @@ function renderNews(items) {
     d.innerHTML =
       '<div class="news-num">' + String(i + 1).padStart(2, '0') + '</div>' +
       '<div class="news-body">' +
-        '<div class="news-tag">'    + n.tag              + '</div>' +
-        '<div class="news-hl">'     + n.title            + '</div>' +
-        (n.excerpt
-          ? '<div class="news-excerpt">' + n.excerpt + '</div>'
-          : '') +
-        '<div class="news-date">'   + fmtDate(n.date)   + '</div>' +
+        '<div class="news-tag">'    + n.tag            + '</div>' +
+        '<div class="news-hl">'     + n.title          + '</div>' +
+        '<div class="news-date">'   + fmtDate(n.date)  + '</div>' +
       '</div>';
     nl.appendChild(d);
   });
@@ -541,7 +522,8 @@ fetch('/content/noticias/index.json')
       .filter(function (d) { return d.published === true; }) /* solo publicados  */
       .sort(function (a, b) {                               /* fecha descendente */
         return String(b.date).localeCompare(String(a.date));
-      });
+      })
+      .slice(0, 6);                                         /* máximo 6 noticias */
     renderNews(items);
   })
   .catch(function (err) {
@@ -707,20 +689,6 @@ pollOptions.addEventListener('click', function (e) {
 });
 
 
-/* ─────────────────────────────────────
-   DISQUS — La Tribuna del Pueblo
-   Shortname: yafaltamenos
-───────────────────────────────────── */
-var disqus_config = function () {
-  this.page.url        = 'https://yafaltamenos.cl';
-  this.page.identifier = 'yafaltamenos-home';
-};
-(function () {
-  var d = document, s = d.createElement('script');
-  s.src = 'https://yafaltamenos.disqus.com/embed.js';
-  s.setAttribute('data-timestamp', +new Date());
-  (d.head || d.body).appendChild(s);
-}());
 </script>
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <script>
