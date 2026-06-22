@@ -22,9 +22,34 @@ export default {
       return handleVote(request, env);
     }
 
+    if (pathname === '/' || pathname === '/index.html') {
+      return rewriteOGImageDate(await env.ASSETS.fetch(request));
+    }
+
     return env.ASSETS.fetch(request);
   },
 };
+
+/* ── Cache-busting de la imagen OG ────────────────────────────────────────
+   X/WhatsApp cachean la imagen por URL exacta. Si la URL no cambia, siguen
+   mostrando la versión vieja aunque /og-image recalcule los días en cada
+   request. Se inyecta la fecha de hoy (hora Chile) como query param en
+   og:image / twitter:image para forzar un re-fetch diario. */
+
+function todayChile() {
+  const chile = new Date(Date.now() - 3 * 60 * 60 * 1000);
+  return chile.toISOString().slice(0, 10);
+}
+
+function rewriteOGImageDate(response) {
+  const url = 'https://yafaltamenos.cl/og-image?d=' + todayChile();
+  const setContent = { element(el) { el.setAttribute('content', url); } };
+
+  return new HTMLRewriter()
+    .on('meta[property="og:image"]', setContent)
+    .on('meta[name="twitter:image"]', setContent)
+    .transform(response);
+}
 
 /* ── Encuesta ──────────────────────────────────────────────────────────── */
 
