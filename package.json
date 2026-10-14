@@ -2,6 +2,14 @@
   "name": "yafaltamenos",
   "version": "1.0.0",
   "private": true,
+  "scripts": {
+    "build": "node build.js",
+    "dev": "npx wrangler dev",
+    "deploy": "npx wrangler deploy"
+  },
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "@resvg/resvg-wasm": "^2.6.0"
   }
