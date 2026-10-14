@@ -7,11 +7,19 @@
   "observability": {
     "enabled": true
   },
+  // Genera dist/ antes de cada `wrangler deploy` y `wrangler dev`
+  // (incluido el deploy automático de Cloudflare al hacer push).
+  "build": {
+    "command": "node build.js",
+    "watch_dir": ["content", "src", "static", "admin", "build.js"]
+  },
   "assets": {
-    "directory": ".",
+    "directory": "./dist",
     "binding": "ASSETS",
     "not_found_handling": "404-page",
-    "run_worker_first": ["/", "/index.html"]
+    // Rutas que atiende worker.js. Deben ir aquí: con un 404.html presente,
+    // cualquier otra ruta sin archivo recibe la 404 sin pasar por el Worker.
+    "run_worker_first": ["/", "/index.html", "/og-image", "/vote"]
   },
   "kv_namespaces": [
     {

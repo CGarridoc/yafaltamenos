@@ -1,141 +1,127 @@
-# YaFaltaMenos.cl — V2
+# YaFaltaMenos.cl
 
 Sitio de sátira política chilena. Cuenta regresiva al 11 de marzo de 2030,
 último día del gobierno de José Antonio Kast.
 
-**Stack:** HTML/CSS/JS vanilla · Decap CMS · Netlify
-
----
-
-## Estructura de archivos
-
-```
-yafaltamenos/
-├── index.html                  ← Página principal
-├── admin/
-│   ├── index.html              ← Panel Decap CMS
-│   └── config.yml              ← Configuración CMS (activa)
-├── static/
-│   ├── admin/
-│   │   └── config.yml          ← Copia de referencia del config
-│   ├── css/
-│   │   └── style.css           ← Todos los estilos + variables dark mode
-│   └── uploads/                ← Imágenes subidas vía CMS (se crea sola)
-├── content/
-│   ├── noticias/               ← Archivos .md de noticias
-│   └── hitos/                  ← Archivos .md de la cronología (opcional)
-├── netlify.toml
-└── README.md
-```
+**Stack:** HTML generado en build con Node (sin frameworks ni dependencias) ·
+Cloudflare Workers (assets estáticos + Worker para `/og-image` y `/vote`) · KV para la encuesta.
 
 ---
 
 ## Cómo agregar una noticia
 
-### Opción A — Vía CMS (recomendado)
+1. Crea un archivo en `content/noticias/`, por ejemplo `content/noticias/2026-10-14-mi-noticia.md`:
 
-1. Ir a `https://yafaltamenos.cl/admin`
-2. Iniciar sesión con Netlify Identity
-3. Colección **Noticias** → **New Noticia**
-4. Completar: titular, fecha, tag, extracto, cuerpo (opcional)
-5. **Publish** → el CMS hace commit en GitHub automáticamente
+   ```markdown
+   ---
+   title: "El titular va aquí"
+   date: 2026-10-14
+   tag: economía
+   excerpt: "Una o dos oraciones."
+   published: true
+   ---
+   ```
 
-> El sitio es estático: después de publicar via CMS, edita también el array
-> `NEWS` en `index.html` para que aparezca en la portada sin build step.
+2. Commit + push a `main`. Listo.
 
-### Opción B — Archivo .md manual
+No hay que tocar ningún índice: el build lee todos los `.md` de la carpeta.
 
-1. Crear `content/noticias/YYYY-MM-DD-slug.md` con este frontmatter:
-
-```markdown
----
-title: "El titular va aquí"
-date: 2026-04-01
-tag: economía
-excerpt: "Una o dos oraciones. El punch va aquí."
-published: true
----
-
-Cuerpo opcional de la noticia en markdown.
-```
-
-2. Agregar la noticia también al array `NEWS` en `index.html`:
-
-```javascript
-{
-  tag:     'economía',
-  hl:      'El titular va aquí',
-  excerpt: 'Una o dos oraciones. El punch va aquí.',
-  date:    'ABR 2026'
-}
-```
-
-3. Commit + push → Netlify redespliega automáticamente.
-
----
+- La home muestra las **6 noticias más recientes** (por `date`).
+- `published: false` la oculta (sirve para borradores). Si omites `published`, se publica.
+- `title` y `date` (formato `YYYY-MM-DD`) son obligatorios. Si faltan o la fecha está
+  mal escrita, el build falla y te dice qué archivo revisar; mientras tanto el sitio
+  sigue mostrando la versión anterior.
+- El nombre del archivo no importa para el orden, pero `YYYY-MM-DD-slug.md` ayuda a encontrarlos.
 
 ## Cómo agregar un hito a la cronología
 
-Editar el array `MILESTONES` en `index.html`:
+Igual que una noticia, en `content/hitos/`:
 
-```javascript
-{
-  date:  '15 ABR 2026',
-  title: 'Título del hito',
-  desc:  'Descripción breve con tono satírico.',
-  type:  'active'   // 'active' = punto rojo | 'future' = punto vacío
-}
+```markdown
+---
+date: 2026-10-14
+title: "Título del hito"
+descripcion: "Descripción breve con tono satírico."
+published: true
+---
 ```
 
-O vía CMS: colección **Hitos de la Cronología** → **New Hito**.
-(Igual que con noticias, actualizar también el array en `index.html`.)
+Aparece en `/cronologia`, del más reciente al más antiguo. Los hitos con fecha futura
+se muestran como "pendientes" (punto vacío); puedes forzarlo con `tipo: active` o `tipo: future`.
 
 ---
 
-## Cómo actualizar el contador de expulsados
+## Correr el build en local
 
-En `index.html`, buscar:
+Requiere Node 18 o superior.
 
-```javascript
-var EXPULSADOS = 0;
+```bash
+npm run build
 ```
 
-Reemplazar `0` con el número real. Se formatea automáticamente con `es-CL`.
+Genera el sitio completo en `dist/` (no se versiona). Para verlo con el Worker,
+la encuesta y `/og-image` funcionando:
+
+```bash
+npm run dev
+```
+
+Abre `http://localhost:8787`. `wrangler dev` vuelve a correr el build cada vez que
+cambias algo en `content/`, `src/` o `static/`. La encuesta usa un KV local, así que
+los votos de prueba no tocan producción.
+
+## Deploy
+
+Cada push a `main` despliega solo: Cloudflare ejecuta `npx wrangler deploy`, y wrangler
+corre `node build.js` antes de subir (está configurado en `"build"` dentro de
+`wrangler.jsonc`). No hace falta configurar un build command en el dashboard.
+
+Deploy manual (requiere `npx wrangler login`):
+
+```bash
+npm run deploy
+```
 
 ---
 
-## Deploy en Netlify
+## Estructura
 
-### Primera vez
+```
+yafaltamenos/
+├── build.js                 ← genera dist/ (páginas, sitemap.xml, robots.txt)
+├── src/
+│   ├── site.js              ← configuración: URL, email de contacto, fechas, etc.
+│   ├── partials/layout.js   ← <head>, nav y footer comunes a todas las páginas
+│   ├── pages/               ← una plantilla por página (/, /cronologia, /privacidad…)
+│   └── lib/                 ← lectura de .md y helpers de formato
+├── content/
+│   ├── noticias/*.md
+│   └── hitos/*.md
+├── static/                  ← CSS y JS del cliente (se copian a dist/static)
+├── worker.js                ← Worker: /og-image, /vote y fecha en og:image de la home
+├── functions/og-image.js    ← genera la imagen PNG de Open Graph
+├── admin/                   ← panel Decap CMS
+└── wrangler.jsonc           ← config de Cloudflare
+```
 
-1. Subir repo a GitHub
-2. En Netlify: **Add new site** → **Import from Git** → seleccionar repo
-3. Build settings: dejar vacíos (no hay build command), publish = `.`
-4. **Deploy site**
+### Agregar una página nueva
 
-### Activar el CMS (Decap CMS + Netlify Identity)
+1. Crea `src/pages/mi-pagina.js` que exporte una función que devuelva
+   `{ path, title, description, body }` (copia `contacto.js` como base).
+2. Agrégala al array `PAGES` en `build.js`.
+3. Si debe aparecer en el menú o el footer, agrégala en `NAV` o `FOOTER_LINKS` de `src/partials/layout.js`.
 
-1. **Site settings → Identity → Enable Identity**
-2. **Identity → Registration → Invite only** (para no dejarlo abierto)
-3. **Identity → Services → Git Gateway → Enable**
-4. Invitar usuarios: **Identity → Invite users**
-5. El panel CMS queda en `https://yafaltamenos.cl/admin`
+Se incluye sola en `sitemap.xml`.
 
-### Deploys posteriores
+### Cosas a tener en cuenta
 
-Cualquier push a `main` redespliega automáticamente en ~30 segundos.
-
----
-
-## Actualizar contenido sin tocar código
-
-| Qué cambiar | Dónde |
-|---|---|
-| Noticias (portada) | Array `NEWS` en `index.html` |
-| Hitos timeline | Array `MILESTONES` en `index.html` |
-| Número expulsados | Variable `EXPULSADOS` en `index.html` |
-| Fecha objetivo | Constante `TARGET` en `index.html` |
-| Link Buy Me a Coffee | Buscar `buymeacoffee.com/yafaltamenos` |
+- **Caché de CSS/JS:** `/static/*` se sirve con caché de un año. El build agrega un
+  hash del contenido a cada URL (`style.css?v=…`), así que los cambios se ven al instante.
+  Agrega los archivos nuevos con `asset('/static/…')` en las plantillas para mantenerlo.
+- **Rutas del Worker:** cualquier ruta nueva que atienda `worker.js` debe agregarse a
+  `assets.run_worker_first` en `wrangler.jsonc`. Si no, Cloudflare devuelve la página 404.
+- **Textos legales:** si el sitio empieza a recolectar algo nuevo (analytics, formularios),
+  actualiza `src/pages/privacidad.js` y `legalUpdated` en `src/site.js`.
 
 ---
 
