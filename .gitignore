@@ -7,3 +7,6 @@
 
 # build output (lo genera build.js)
 dist
+
+# dependencias (las de @resvg ya versionadas siguen trackeadas)
+node_modules/

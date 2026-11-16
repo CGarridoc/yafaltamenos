@@ -21,6 +21,7 @@ const crypto = require('crypto');
 const site              = require('./src/site');
 const layout            = require('./src/partials/layout');
 const { loadCollection } = require('./src/lib/content');
+const { normalizeTag }   = require('./src/lib/tags');
 
 const ROOT = __dirname;
 const DIST = path.join(ROOT, 'dist');
@@ -60,6 +61,17 @@ function write(relPath, contents) {
   fs.writeFileSync(file, contents);
 }
 
+/* Lleva cada tag a su forma canónica ("economia" → "economía"). Un tag
+   desconocido se deja tal cual, con aviso: no vale la pena botar el build. */
+function withCanonicalTags(news) {
+  return news.map((n) => {
+    if (!n.tag) return n;
+    const tag = normalizeTag(n.tag);
+    if (!tag) console.warn(`⚠ ${n.file}: tag desconocido "${n.tag}"`);
+    return { ...n, tag: tag || n.tag };
+  });
+}
+
 /* Fecha de hoy en Chile (YYYY-MM-DD) */
 function todayChile() {
   return new Date().toLocaleDateString('en-CA', { timeZone: 'America/Santiago' });
@@ -86,7 +98,7 @@ function build() {
   const started = Date.now();
 
   const data = {
-    news:  loadCollection(path.join(ROOT, 'content/noticias')),
+    news:  withCanonicalTags(loadCollection(path.join(ROOT, 'content/noticias'))),
     hitos: loadCollection(path.join(ROOT, 'content/hitos')),
     today: todayChile(),
   };

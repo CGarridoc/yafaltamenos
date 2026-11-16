@@ -12,5 +12,8 @@
   },
   "dependencies": {
     "@resvg/resvg-wasm": "^2.6.0"
+  },
+  "devDependencies": {
+    "@anthropic-ai/sdk": "^1.8.0"
   }
 }
