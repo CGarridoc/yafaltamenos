@@ -1,0 +1,78 @@
+# Noticias diarias: publica los borradores vencidos, genera hasta 3 nuevos
+# (scripts/fetch-news.js) y hace push a main. Ese push dispara el deploy de
+# Cloudflare como cualquier otro.
+
+name: Noticias diarias
+
+on:
+  schedule:
+    # 07:00 en Chile. Como Chile cambia de horario, hay dos crons y el primer
+    # paso deja seguir solo al que corresponde a la fecha:
+    #   10:00 UTC = 07:00 con horario de verano   (UTC-3, septiembre → abril)
+    #   11:00 UTC = 07:00 con horario de invierno (UTC-4, abril → septiembre)
+    - cron: '0 10 * * *'
+    - cron: '0 11 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-news
+  cancel-in-progress: false
+
+jobs:
+  news:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: ¿Son las 07:00 en Chile?
+        id: hora
+        if: github.event_name == 'schedule'
+        run: |
+          offset=$(TZ=America/Santiago date +%z)
+          case "${{ github.event.schedule }}|$offset" in
+            "0 10 * * *|-0300" | "0 11 * * *|-0400")
+              echo "run=true" >> "$GITHUB_OUTPUT" ;;
+            *)
+              echo "run=false" >> "$GITHUB_OUTPUT"
+              echo "Este cron no corresponde al horario actual de Chile (UTC$offset), se omite." ;;
+          esac
+
+      - uses: actions/checkout@v4
+        if: steps.hora.outputs.run != 'false'
+
+      - uses: actions/setup-node@v4
+        if: steps.hora.outputs.run != 'false'
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        if: steps.hora.outputs.run != 'false'
+        run: npm ci
+
+      - name: Traer noticias
+        if: steps.hora.outputs.run != 'false'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node scripts/fetch-news.js
+
+      - name: Commit y push
+        if: steps.hora.outputs.run != 'false'
+        run: |
+          git add -A -- content/noticias
+          [ -d data ] && git add -A -- data
+          if git diff --cached --quiet; then
+            echo "Sin cambios."
+            exit 0
+          fi
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "auto: noticias $(TZ=America/Santiago date +%F)"
+          # Si alguien hizo push mientras corría (p. ej. aprobando un borrador), se rebasa y reintenta
+          for i in 1 2 3; do
+            git push && exit 0
+            git pull --rebase --autostash
+          done
+          exit 1
