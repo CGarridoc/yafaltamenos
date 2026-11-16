@@ -5,6 +5,6 @@ tag: internacional
 excerpt: "En Hanói, Kast apuntó a exportar más carne, cobre y litio, y citó a los inversionistas vietnamitas a la cumbre Choose Chile de marzo de 2027."
 source: "https://www.latercera.com/politica/noticia/presidente-kast-llama-a-empresarios-vietnamitas-a-invertir-en-chile-y-anuncia-nuevas-gestiones-para-ampliar-exportaciones/"
 source_title: "Presidente Kast llama a empresarios vietnamitas a invertir en Chile y anuncia gestiones para ampliar exportaciones"
-published: false
+published: true
 auto_publish_at: 2026-11-17T16:01:58Z
 ---
