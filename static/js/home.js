@@ -67,13 +67,21 @@ tick();
 ───────────────────────────────────── */
 var SITE_URL = 'https://yafaltamenos.cl';
 
+/* X y WhatsApp guardan la vista previa por link exacto (X, ~7 días). Con la
+   fecha de hoy (hora Chile) en el link, cada día es un link nuevo y la
+   tarjeta muestra los días que faltan hoy. */
+function shareUrl() {
+  var today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santiago' }).format(new Date());
+  return SITE_URL + '/?d=' + today;
+}
+
 function getShareText() {
   var diff = TARGET - new Date();
   var days = Math.max(0, Math.floor(diff / 86400000));
   var pct  = Math.min(100, Math.max(0, (new Date() - START) / TOTAL * 100));
   return (
     'Todavía faltan ' + days + ' días para el último día de Kast 🇨🇱\n' +
-    pct.toFixed(1) + '% del mandato completado → yafaltamenos.cl'
+    pct.toFixed(1) + '% del mandato completado → ' + shareUrl()
   );
 }
 
@@ -100,12 +108,13 @@ document.getElementById('copyLink').addEventListener('click', function () {
     }, 2200);
   }
 
+  var link = shareUrl();
   if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(SITE_URL).then(onCopied).catch(function () {
-      fallbackCopy(SITE_URL, onCopied);
+    navigator.clipboard.writeText(link).then(onCopied).catch(function () {
+      fallbackCopy(link, onCopied);
     });
   } else {
-    fallbackCopy(SITE_URL, onCopied);
+    fallbackCopy(link, onCopied);
   }
 });
 
