@@ -95,7 +95,7 @@ ${page.head || ''}
 
   <div class="nav-links">
     ${NAV.map((item) => link(item, page.path)).join('\n    ')}
-    <a href="${site.donateUrl}" target="_blank" rel="noopener">apóyanos</a>
+    ${site.donateUrl ? `<a href="${site.donateUrl}" target="_blank" rel="noopener">apóyanos</a>` : ''}
   </div>
 
   <div class="nav-right">
@@ -112,7 +112,7 @@ ${page.head || ''}
 <!-- Mobile menu -->
 <div class="mobile-nav" id="mobileNav" role="navigation" aria-label="Menú móvil">
   ${NAV.map((item) => link(item, page.path)).join('\n  ')}
-  <a href="${site.donateUrl}" target="_blank" rel="noopener">apóyanos ☕</a>
+  ${site.donateUrl ? `<a href="${site.donateUrl}" target="_blank" rel="noopener">apóyanos ☕</a>` : ''}
 </div>
 
 <main>

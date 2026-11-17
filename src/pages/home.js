@@ -144,14 +144,14 @@ module.exports = function home({ news, hitos }, asset) {
 <!-- ══════════════════════════════════════
      DONATE STRIP
 ══════════════════════════════════════ -->
-<div class="donate-strip">
+${site.donateUrl ? `<div class="donate-strip">
   <a class="donate-btn"
      href="${site.donateUrl}"
      target="_blank"
      rel="noopener noreferrer">
     &#9749; apóyanos con un café
   </a>
-</div>
+</div>` : ''}
 
 
 <!-- ══════════════════════════════════════

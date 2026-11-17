@@ -14,7 +14,9 @@ module.exports = {
   start:       '2026-03-11T00:00:00-03:00',
   target:      '2030-03-11T00:00:00-03:00',
 
-  donateUrl:   'https://www.buymeacoffee.com/yafaltamenos',
+  // Link de "apóyanos". Vacío = no se muestra el botón en ninguna página.
+  // (buymeacoffee.com/yafaltamenos es de otra persona: no usar.)
+  donateUrl:   '',
 
   // Email público de contacto (aparece en /contacto, /privacidad y /terminos).
   // Se puede crear gratis con Cloudflare Email Routing → reenvío a un correo personal.
