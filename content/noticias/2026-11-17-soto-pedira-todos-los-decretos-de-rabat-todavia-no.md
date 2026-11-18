@@ -1,8 +1,8 @@
 ---
-title: "Soto pedirá todos los decretos de Rabat: “Todavía no transparenta”"
+title: "Rabat entrega sus decretos en cuotas: unos al Senado, otros a la Cámara. Romero dice que la comisión será “un trámite”. Soto (PPD): “le tiene poca confianza al ministro”."
 date: 2026-11-17
 tag: gabinete
-excerpt: "El diputado Raúl Soto (PPD) anunció en El Primer Café que solicitará la entrega de todos los decretos de rebaja de condena del ministro de Justicia, Fernando Rabat , como parte del trabajo de la…"
+excerpt: "Raúl Soto, integrante de la comisión revisora, pedirá todos los decretos de rebaja de condena: el ministro “todavía no transparenta”, dijo."
 source: "https://www.cooperativa.cl/noticias/pais/gobierno/gabinete/soto-pedira-todos-los-decretos-de-rabat-todavia-no-transparenta/2026-11-17/113041.html"
 source_title: "Soto pedirá todos los decretos de Rabat: “Todavía no transparenta”"
 published: false
