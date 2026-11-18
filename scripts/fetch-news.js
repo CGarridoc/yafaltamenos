@@ -18,7 +18,7 @@
  * volver a crear una noticia aunque se borre su .md.
  *
  * --dry-run: muestra lo que haría sin escribir nada ni llamar a la API.
- * Lo corre .github/workflows/daily-news.yml todos los días a las 07:00 (Chile).
+ * Lo corre .github/workflows/daily-news.yml todos los días a las 07:17 (Chile).
  * ─────────────────────────────────────────────────────────────────────────
  */
 

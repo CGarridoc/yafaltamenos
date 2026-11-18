@@ -37,7 +37,7 @@ No hay que tocar ningún índice: el build lee todos los `.md` de la carpeta.
 
 ## Noticias automáticas
 
-Todos los días a las **07:00 (hora de Chile)** la GitHub Action
+Todos los días a las **07:17 (hora de Chile)** la GitHub Action
 [`daily-news.yml`](.github/workflows/daily-news.yml) corre `scripts/fetch-news.js`, que:
 
 1. **Publica** los borradores cuyo `auto_publish_at` ya pasó (`published: false` → `true`).
@@ -120,15 +120,17 @@ Requiere haber corrido `npm install` (usa el SDK de Anthropic).
 - **A mano:** repo → **Actions → Noticias diarias → Run workflow**.
 - **Cambiar la hora:** en `.github/workflows/daily-news.yml` hay dos crons en UTC, uno para
   el horario de verano de Chile (UTC-3) y otro para el de invierno (UTC-4). Para correrlo,
-  por ejemplo, a las 08:00 de Chile:
+  por ejemplo, a las 08:17 de Chile:
 
   ```yaml
-  - cron: '0 11 * * *'   # 08:00 en verano (UTC-3)
-  - cron: '0 12 * * *'   # 08:00 en invierno (UTC-4)
+  - cron: '17 11 * * *'   # 08:17 en verano (UTC-3)
+  - cron: '17 12 * * *'   # 08:17 en invierno (UTC-4)
   ```
 
-  y actualiza los mismos dos valores en el `case` del paso "¿Son las 07:00 en Chile?"
-  (`"0 11 * * *|-0300" | "0 12 * * *|-0400"`). GitHub puede atrasar los crons varios minutos.
+  y actualiza los mismos dos valores en el `case` del paso "¿Es el cron del horario actual
+  de Chile?" (`"17 11 * * *|-0300" | "17 12 * * *|-0400"`). Evita el minuto 0: GitHub
+  atrasa mucho los crons en punto (se vio uno partir 9 horas tarde). Aun así, cualquier
+  cron puede llegar con algunos minutos de atraso.
 - **Cantidad de noticias, palabras clave o tono:** `MAX_PER_DAY`, `KEYWORDS` y `SYSTEM_PROMPT`
   en `scripts/fetch-news.js`.
 

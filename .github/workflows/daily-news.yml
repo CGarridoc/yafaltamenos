@@ -6,12 +6,14 @@ name: Noticias diarias
 
 on:
   schedule:
-    # 07:00 en Chile. Como Chile cambia de horario, hay dos crons y el primer
+    # 07:17 en Chile. Como Chile cambia de horario, hay dos crons y el primer
     # paso deja seguir solo al que corresponde a la fecha:
-    #   10:00 UTC = 07:00 con horario de verano   (UTC-3, septiembre → abril)
-    #   11:00 UTC = 07:00 con horario de invierno (UTC-4, abril → septiembre)
-    - cron: '0 10 * * *'
-    - cron: '0 11 * * *'
+    #   10:17 UTC = 07:17 con horario de verano   (UTC-3, septiembre → abril)
+    #   11:17 UTC = 07:17 con horario de invierno (UTC-4, abril → septiembre)
+    # El minuto 17 es a propósito: GitHub atrasa (horas, a veces) los crons
+    # en punto, que es cuando más se ejecutan.
+    - cron: '17 10 * * *'
+    - cron: '17 11 * * *'
   workflow_dispatch:
 
 permissions:
@@ -26,13 +28,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: ¿Son las 07:00 en Chile?
+      - name: ¿Es el cron del horario actual de Chile?
         id: hora
         if: github.event_name == 'schedule'
         run: |
           offset=$(TZ=America/Santiago date +%z)
           case "${{ github.event.schedule }}|$offset" in
-            "0 10 * * *|-0300" | "0 11 * * *|-0400")
+            "17 10 * * *|-0300" | "17 11 * * *|-0400")
               echo "run=true" >> "$GITHUB_OUTPUT" ;;
             *)
               echo "run=false" >> "$GITHUB_OUTPUT"
