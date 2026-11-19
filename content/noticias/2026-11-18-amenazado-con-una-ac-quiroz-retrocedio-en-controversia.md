@@ -5,6 +5,6 @@ tag: economía
 excerpt: "El ministro de Hacienda incluirá en el Presupuesto 2027 los cerca de US$160 millones del FAPP, que la Contraloría y la Superintendencia ya daban por obligatorios."
 source: "https://www.cooperativa.cl/noticias/economia/presupuesto/amenazado-con-una-ac-quiroz-retrocedio-en-controversia-presupuestaria/2026-11-18/113017.html"
 source_title: "Amenazado con una AC, Quiroz retrocedió en controversia presupuestaria"
-published: false
+published: true
 auto_publish_at: 2026-11-19T15:51:50Z
 ---
