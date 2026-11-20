@@ -5,6 +5,6 @@ tag: economía
 excerpt: "La Comisión de Agricultura, con todos sus integrantes, pidió a Kast que intervenga para que Campos se disculpe. La presidenta, Natalia Romero (Ind.-UDI), dice que el ministro “no se va a disculpar”."
 source: "https://www.latercera.com/politica/noticia/comision-de-agricultura-de-la-camara-oficia-a-kast-y-pide-su-intervencion-para-que-campos-se-disculpe-por-dichos-de-exportaciones/"
 source_title: "Comisión de Agricultura de la Cámara oficia a Kast y pide su intervención para que Campos se disculpe por dichos de exportaciones"
-published: false
+published: true
 auto_publish_at: 2026-11-20T14:21:07Z
 ---
